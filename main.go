@@ -1,56 +1,86 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
 )
 
-const usageMessage = "Usage: go run . --color=<color> <letters to be colored> [STRING]"
+const (
+	Reset  = "\033[0m"
+	Red    = "\033[31m"
+	Green  = "\033[32m"
+	Yellow = "\033[33m"
+	Blue   = "\033[34m"
+	// Add more colors as needed
+)
+
+func fad(text string, colorCode string) string {
+	var s int
+	fmt.Println("Choose a font 😊")
+	fmt.Println("Standard = 1")
+	fmt.Println("Thinkertoy = 2")
+	fmt.Println("Shadow = 3")
+
+	fmt.Scan(&s)
+	var m2 []string
+	var m1 []string
+	for i := 0; i < len(text); i++ {
+		switch s {
+		case 1:
+			m2 = standard(text[i])
+		case 2:
+			m2 = thinkertoy(text[i])
+		case 3:
+			m2 = shadow(text[i])
+		}
+		if i == 0 {
+			m1 = m2
+		} else {
+			for j := 0; j < len(m1); j++ {
+				m1[j] += m2[j]
+			}
+		}
+	}
+	coloredText := colorize(strings.Join(m1, "\n"), colorCode)
+	return coloredText
+}
+
+func colorize(text string, colorCode string) string {
+	return colorCode + text + Reset
+}
+
+func chooseColor(colorFlag string) string {
+	switch colorFlag {
+	case "red":
+		return Red
+	case "green":
+		return Green
+	case "yellow":
+		return Yellow
+	case "blue":
+		return Blue
+	default:
+		fmt.Println("Invalid color choice. Defaulting to Red.")
+		return Red
+	}
+}
 
 func main() {
-	colorFlag := flag.String("color", "", "Specify the color using RGB values (e.g., 255,0,0 for red)")
-	flag.Parse()
-
-	if *colorFlag == "" {
-		fmt.Println(usageMessage)
-		os.Exit(1)
+	if len(os.Args) != 3 {
+		fmt.Println("Usage: go run . --color=<color> <text>")
+		return
 	}
 
-	colors := strings.Split(*colorFlag, ",")
-	if len(colors) != 3 {
-		fmt.Println(usageMessage)
-		os.Exit(1)
+	colorFlag := os.Args[1]
+	colorCode := chooseColor(colorFlag)
+	text := os.Args[2]
+
+	m2 := strings.Split(strings.TrimSpace(text), "\n")
+	asciiArt := []string{}
+	for _, line := range m2 {
+		asciiArt = append(asciiArt, fad(line, colorCode))
 	}
-
-	red, green, blue := colors[0], colors[1], colors[2]
-
-	stringArg := flag.Arg(0)
-	if stringArg == "" {
-		fmt.Println(usageMessage)
-		os.Exit(1)
-	}
-
-	coloredString := colorizeAsciiArt(stringArg, red, green, blue)
-	fmt.Println(coloredString)
-}
-
-func colorizeAsciiArt(input string, red, green, blue string) string {
-	colorCode := fmt.Sprintf("\x1b[38;2;%s;%s;%sm", red, green, blue)
-	resetCode := "\x1b[0m"
-
-	var result string
-
-	for _, char := range input {
-		asciiArt := getArt(byte(char))
-		coloredAsciiArt := colorizeString(strings.Join(asciiArt, "\n"), colorCode, resetCode)
-		result += coloredAsciiArt
-	}
-
-	return result
-}
-
-func colorizeString(input, colorCode, resetCode string) string {
-	return fmt.Sprintf("%s%s%s", colorCode, input, resetCode)
+	asciiArtText := strings.Join(asciiArt, "\n")
+	fmt.Println(asciiArtText)
 }

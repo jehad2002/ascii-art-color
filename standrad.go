@@ -1,14 +1,14 @@
 package main
 
-func getArt(char byte) []string {
+func standard(char byte) []string {
 	font := make(map[byte][]string, 100)
 	font[32] = []string{
-		"     $$",
-		"    $$ ",
-		"   $$  ",
-		"  $$   ",
-		" $$    ",
-		"$$     ",
+		"     ",
+		"     ",
+		"     ",
+		"     ",
+		"     ",
+		"     ",
 	}
 	font[33] = []string{
 		"    __",
@@ -22,8 +22,8 @@ func getArt(char byte) []string {
 		" _ _ ",
 		"( | )",
 		"|/|/ ",
-		" $   ",
-		"$    ",
+		"     ",
+		"     ",
 		"     ",
 	}
 	font[35] = []string{
@@ -518,8 +518,8 @@ func getArt(char byte) []string {
 		"  _ ",
 		" ( )",
 		"  V ",
-		" $  ",
-		"$   ",
+		"    ",
+		"    ",
 		"    ",
 	}
 	font[97] = []string{
@@ -757,9 +757,9 @@ func getArt(char byte) []string {
 	font[126] = []string{
 		"  /\\//",
 		" //\\/ ",
-		"  $   ",
-		" $    ",
-		"$     ",
+		"      ",
+		"      ",
+		"      ",
 		"      ",
 	}
 
