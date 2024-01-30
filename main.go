@@ -61,8 +61,8 @@ func chooseColor(colorFlag string) string {
 	case "blue":
 		return Blue
 	default:
-		fmt.Println("Invalid color choice. Defaulting to Red.")
-		return Red
+		fmt.Println("the color not found, using default color")
+		return colorFlag
 	}
 }
 
@@ -72,7 +72,7 @@ func main() {
 		return
 	}
 
-	colorFlag := os.Args[1]
+	colorFlag := os.Args[1][8:]
 	colorCode := chooseColor(colorFlag)
 	text := os.Args[2]
 
