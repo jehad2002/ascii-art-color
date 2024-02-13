@@ -1,8 +1,8 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -12,10 +12,9 @@ const (
 	Green  = "\033[32m"
 	Yellow = "\033[33m"
 	Blue   = "\033[34m"
-	// Add more colors as needed
 )
 
-func fad(text string, colorCode string) string {
+func fad(text string, colorCode string, lettersToColor string) string {
 	var s int
 	fmt.Println("Choose a font 😊")
 	fmt.Println("Standard = 1")
@@ -26,14 +25,27 @@ func fad(text string, colorCode string) string {
 	var m2 []string
 	var m1 []string
 	for i := 0; i < len(text); i++ {
+		var char rune = rune(text[i]) // Convert byte to rune
+		var shouldColor bool
+		if strings.ContainsRune(lettersToColor, char) {
+			shouldColor = true
+		} else {
+			shouldColor = false
+		}
+
 		switch s {
 		case 1:
-			m2 = standard(text[i])
+			m2 = standard(byte(char)) // Pass rune as byte
 		case 2:
-			m2 = thinkertoy(text[i])
+			m2 = thinkertoy(byte(char)) // Pass rune as byte
 		case 3:
-			m2 = shadow(text[i])
+			m2 = shadow(byte(char)) // Pass rune as byte
 		}
+
+		if shouldColor {
+			m2 = colorizeSlice(m2, colorCode)
+		}
+
 		if i == 0 {
 			m1 = m2
 		} else {
@@ -42,12 +54,19 @@ func fad(text string, colorCode string) string {
 			}
 		}
 	}
-	coloredText := colorize(strings.Join(m1, "\n"), colorCode)
+	coloredText := strings.Join(m1, "\n")
 	return coloredText
 }
 
 func colorize(text string, colorCode string) string {
 	return colorCode + text + Reset
+}
+
+func colorizeSlice(slice []string, colorCode string) []string {
+	for i := range slice {
+		slice[i] = colorCode + slice[i] + Reset
+	}
+	return slice
 }
 
 func chooseColor(colorFlag string) string {
@@ -67,19 +86,22 @@ func chooseColor(colorFlag string) string {
 }
 
 func main() {
-	if len(os.Args) != 3 {
-		fmt.Println("Usage: go run . --color=<color> <text>")
+	colorFlag := flag.String("color", "red", "Specify the color (red, green, yellow, blue)")
+	flag.Parse()
+
+	if len(flag.Args()) < 2 {
+		fmt.Println("Usage: go run . --color=<color> <letters to be colored> <text>")
 		return
 	}
 
-	colorFlag := os.Args[1][8:]
-	colorCode := chooseColor(colorFlag)
-	text := os.Args[2]
+	colorCode := chooseColor(*colorFlag)
+	lettersToColor := flag.Arg(0)
+	text := strings.Join(flag.Args()[1:], " ")
 
 	m2 := strings.Split(strings.TrimSpace(text), "\n")
 	asciiArt := []string{}
 	for _, line := range m2 {
-		asciiArt = append(asciiArt, fad(line, colorCode))
+		asciiArt = append(asciiArt, fad(line, colorCode, lettersToColor))
 	}
 	asciiArtText := strings.Join(asciiArt, "\n")
 	fmt.Println(asciiArtText)
