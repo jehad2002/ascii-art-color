@@ -12,6 +12,7 @@ const (
 	Green  = "\033[32m"
 	Yellow = "\033[33m"
 	Blue   = "\033[34m"
+	Orange = "\033[38;5;208m" // ANSI escape code for orange color
 )
 
 func fad(text string, colorCode string, lettersToColor string) string {
@@ -79,14 +80,16 @@ func chooseColor(colorFlag string) string {
 		return Yellow
 	case "blue":
 		return Blue
+	case "orange":
+		return Orange
 	default:
-		fmt.Println("the color not found, using default color")
-		return colorFlag
+		fmt.Println("Color not found, using default color (red)")
+		return Red
 	}
 }
 
 func main() {
-	colorFlag := flag.String("color", "red", "Specify the color (red, green, yellow, blue)")
+	colorFlag := flag.String("color", "red", "Specify the color (red, green, yellow, blue, orange)")
 	flag.Parse()
 
 	if len(flag.Args()) < 2 {
