@@ -25,13 +25,20 @@ func fad(text string, colorCode string, lettersToColor string) string {
 	fmt.Scan(&s)
 	var m2 []string
 	var m1 []string
+	// Variable to track the position in lettersToColor
+	var lettersToColorIndex int
+
 	for i := 0; i < len(text); i++ {
-		var char rune = rune(text[i]) // Convert byte to rune
+		char := rune(text[i]) // Convert byte to rune
 		var shouldColor bool
-		if strings.ContainsRune(lettersToColor, char) {
+
+		// Check if the current character matches the next character to color
+		if lettersToColorIndex < len(lettersToColor) && char == rune(lettersToColor[lettersToColorIndex]) {
 			shouldColor = true
+			lettersToColorIndex++
 		} else {
 			shouldColor = false
+			lettersToColorIndex = 0 // Reset the index if the sequence is broken
 		}
 
 		switch s {
@@ -57,10 +64,6 @@ func fad(text string, colorCode string, lettersToColor string) string {
 	}
 	coloredText := strings.Join(m1, "\n")
 	return coloredText
-}
-
-func colorize(text string, colorCode string) string {
-	return colorCode + text + Reset
 }
 
 func colorizeSlice(slice []string, colorCode string) []string {
@@ -98,6 +101,7 @@ func main() {
 	}
 
 	colorCode := chooseColor(*colorFlag)
+
 	lettersToColor := flag.Arg(0)
 	text := strings.Join(flag.Args()[1:], " ")
 
